@@ -1,60 +1,55 @@
+
+import Nav from './component/Nav'
+import TodoApp from './Page/todoApp'
+import Home from './Page/Home'
+import DemoApp from './Page/DemoApp'
+import './index.css'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import Sigin from './Page/sigin'
+import Login from './Page/login'
 import { useState } from 'react'
 
-// import './App.css'
-
 function App() {
-  const [text, setText] = useState('')
-  const [todo,setTodo] = useState([])
+ 
 
-
-  function addtodo(e) {
-
-    e.preventDefault()
-    if(!text) return
-    setTodo([...todo,text])
- setText("")
-}
-
-  function deleteTodo(e) {
-    
-    const index = todo.indexOf(e.target.closest('li').children[0].textContent)
-    
-     todo.splice(index,1)
-    
-    setTodo([...todo])
-
-  }
-
-  function updateTodo(e) {
-
-   const defaulValue = e.target.closest('li').children[0].textContent
-    const index = todo.indexOf(e.target.closest('li').children[0].textContent)
-    
-    todo.splice(index,1,window.prompt("update you todo") || defaulValue)
-    
-    setTodo([...todo])
-    
-  }
-
+  const [location,setLocation] = useState('')
+  
 
   return (
-    <div style={{width:'100%',textAlign:'center'}}>
-      <form onSubmit={addtodo}  >
-        <h1>Todo App</h1>
-        <input type="text" value={text} onChange={ (e)=>{setText(e.target.value)}} />
-        <button type="submit">Add</button>
+    <div className="bg-gradient-to-r from-teal-500 to-blue-600 min-h-screen">
+    
+   
 
-        {todo.map((el,i) => {
-          return <div key={crypto.randomUUID()}>
-            <li ><span>{todo[i]}</span> <button type='button' value ="text" onClick={deleteTodo}>delete</button>
-            <button type='button' onClick={updateTodo}>Update</button></li>
-            
-          </div>
-        })}
-     </form>
-    </div>
+      <BrowserRouter>
+      <Nav location={location} setLocation={setLocation } />
+        <Routes>
+          <Route path='TodoApp' element={<TodoApp location={location} setLocation={setLocation } />} />
+          <Route index element={<Home location={location} setLocation={setLocation }/>} />
+          <Route path='register' element={<Sigin location={location} setLocation={setLocation }/>} />
+          <Route path='login' element={<Login location={location} setLocation={setLocation} />} />
+          <Route path='DemoApp' element={<DemoApp/>} />
+      </Routes>
+      </BrowserRouter>
+  
+      </div>
   )
 }
 
 
+
+
+
+
 export default App
+
+
+
+
+
+
+
+
+
+
+
+
