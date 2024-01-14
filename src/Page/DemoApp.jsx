@@ -73,9 +73,11 @@ function TodoApp() {
       
 
       <form onSubmit={addtodo} className=" min-h-screen bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-      <div className="absolute top-[20%] bg-white rounded-lg shadow-md w-full max-w-2xl p-8">
-        <h1 className="text-3xl font-bold mb-4 text-center text-gray-800">Todo App</h1>
-
+        <div className="absolute top-[20%] bg-white rounded-lg shadow-md w-full max-w-2xl p-8">
+          <div className='text-center mb-5'>
+          <h1 className="text-3xl font-bold mb-4 text-center text-gray-800">This is Demo Version</h1>
+          <h1>Register Now For Real Experience</h1>
+          </div>
         <div className="mb-4">
           <input
             type="text"
