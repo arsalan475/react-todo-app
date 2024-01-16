@@ -1,6 +1,7 @@
 import { signOut} from "firebase/auth";
 import { useNavigate, useParams } from "react-router-dom";
-import { auth,db } from "../fireBaseConfig";
+import { auth, db } from "../fireBaseConfig";
+import { Button } from "@mui/material";
 function SpecialLogOutBtn() {
     const navigate = useNavigate()
     function logout() {
@@ -18,7 +19,7 @@ function SpecialLogOutBtn() {
         
         <div>
  
-        <button onClick={logout} className="text-white hover:text-gray-300 transition duration-300 transform hover:-translate-y-1 hover:shadow-md inline-block py-2 px-4 bg-indigo-600 rounded-md" >LogOut</button>
+        <Button color='inherit' onClick={logout} className="text-white hover:text-gray-300 transition duration-300 transform hover:-translate-y-1 hover:shadow-md inline-block py-2 px-4 bg-indigo-600 rounded-md" >Log out</Button>
             </div>
             
     )
