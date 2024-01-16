@@ -18,9 +18,9 @@ const Home = () => {
           </p>
           <div className="flex justify-center">
           <Link to="/DemoApp">   <button
-              className="bg-pink-500 text-white px-6 py-3 rounded-md hover:bg-pink-600 transition"
+              className="bg-pink-500 font-semibold text-white px-6 py-3 rounded-md hover:bg-pink-600 transition"
             >
-             Get Started  
+             Try Demo Version
                     </button>
                     </Link>
           </div>

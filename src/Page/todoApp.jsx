@@ -21,7 +21,8 @@ function TodoApp({location,setLocation}) {
   const [text, setText] = useState('')
   const [todo,setTodo] = useState([])
   const [docid, setDocId] = useState([])
-const [loading,isLoading] = useState(false)
+  const [loading, isLoading] = useState(false)
+ 
   useEffect(function(){
     setLocation(window.location.pathname)
     onAuthStateChanged(auth, (user) => {
@@ -83,7 +84,8 @@ isLoading(false)
         setDocId([...docid, docRef.id])
        
       } catch (e) {
-        console.error("Error adding document: ", e);
+        alert("Error adding document: ", e);
+        isLoading(false)
       }
 
    setText("")
@@ -91,17 +93,23 @@ isLoading(false)
   
    async function deleteTodo(e) {
       
-     let  todoref = e.target.closest('.li')
-  
-   
-   
-
+     let todoref = e.target.closest('.li')
+     let  todorefParent = e.target.closest('.empty')
+     let parent = e.target.closest('.li').closest(".space-y-4")
+     let index = todo.indexOf(todoref.firstElementChild.firstElementChild.textContent )
+      
+     if (!todoref) return
+     console.log(todorefParent)
+     console.log(todoref)
+     
      const userRef = doc(db,'todos',todoref.id)
      
      try{
        await deleteDoc(userRef).then((res) => {
          console.log('sucessfully Deleted')
+          todo.splice(index,1)
          todoref.remove()
+         todorefParent.className = ''
        });
        
      }catch (e) {
@@ -112,9 +120,11 @@ isLoading(false)
 
   //// specific function updating todos but this not the good way bcoz we are breaking DRY  rule
   
-
+  
+  let editableRef = useRef(false)
+  
   async function forUpdatingTodos(UserUid) {
-      
+   
     let allTodos ='';
     let addDocId=''
    
@@ -132,28 +142,58 @@ const q = query(collection(db, "todos"), where("uid", "==", UserUid))
 
     setTodo(allTodos.split('"').slice(1))
      setDocId(addDocId.split('"').slice(1))
-    
+     
     
   }
 
 
 ///// UPDATE TODO FUNCTION
 
+  
    async function updateTodo(e) {
   
    
-    let  todoref = e.target.closest('.li') 
-
-     const updatedValue = prompt('Update todo')   
+   
+     let todoref = e.target.closest('.li') 
+     let defaulValue = todoref.firstElementChild.querySelectorAll('span')[0]
+     let extraInfo = todoref.firstElementChild.querySelectorAll('span')[1]
+     let inputField = todoref.firstElementChild.firstElementChild
      
-          await updateDoc(doc(db, "todos", todoref.id), {
-            title: updatedValue,
-          }).then((updated) => {
-            
-              forUpdatingTodos(auth.currentUser.uid)
-           
-          });
-      
+   
+     
+    //  inputRef = inputField
+  
+    
+
+
+     if (editableRef) {
+      inputField.removeAttribute("disabled");
+       inputField.style.display = 'block';
+       inputField.value = defaulValue.textContent
+       defaulValue.style.display = 'none'
+       inputField.focus()
+       extraInfo.style.display='block'
+     }
+     
+     
+    
+     
+    //  const updatedValue = prompt('Update todo')   || inputField.value
+     if (editableRef === false) {
+       await updateDoc(doc(db, "todos", todoref.id), {
+         title: inputField.value || defaulValue.textContent
+       }).then((updated) => {
+        inputField.setAttribute("disabled", true);
+         
+        inputField.style.display= 'none'
+         defaulValue.style.display = 'block'
+         extraInfo.style.display='none'
+          forUpdatingTodos(auth.currentUser.uid)
+         
+       });
+     }
+     editableRef = !editableRef
+     
     }
 
   return (
@@ -183,25 +223,27 @@ const q = query(collection(db, "todos"), where("uid", "==", UserUid))
             
           }
         </div>
-
+         
         <div className="space-y-4">
           {/* Todo Cards */}
-            {todo.map((el, i) => (
+            {todo.length > 0 ? todo.map((el, i) => (
             
               
-            <div id={docid[i]}
+            <div  id={docid[i]} 
             key={crypto.randomUUID()}
               
-              className={`li bg-gradient-to-r from-pink-100 to-pink-200 p-4 rounded-md shadow-md hover:shadow-lg transition transform hover:scale-105`}
+              className={`empty bg-gradient-to-r from-pink-100 to-pink-200 p-3 rounded-md shadow-md hover:shadow-lg transition transform hover:scale-105`}
             >
               
-              <div   className=" flex items-center justify-between">
-                <div className="flex items-center">
+              <div id={docid[i]}  className="li flex items-center justify-between">
+                <div className="flex flex-col gap-2">
                  
-                  <span className="text-lg text-gray-800">{todo[i]}</span>
+                    <input   className=" outline-none hidden bg-transparent text-gray-800" disabled />
+                    <span>{todo[i]}</span>
+                    <span className="hidden font-semibold text-xs ">click again on Edit button to save changes</span>
                 </div>
                 <div className="flex space-x-2">
-                  <button onClick={updateTodo} className="text-blue-500 hover:text-blue-700 cursor-pointer">
+                  <button ref={editableRef} onClick={updateTodo} className="text-blue-500 hover:text-blue-700 cursor-pointer">
                     <FontAwesomeIcon icon={faEdit} />
                   </button>
                   <button onClick={deleteTodo} className="text-red-500 hover:text-red-700 cursor-pointer">
@@ -211,7 +253,7 @@ const q = query(collection(db, "todos"), where("uid", "==", UserUid))
                 </div>
                 </div>
            
-          ))}
+          )):<h1>Todos not found</h1>}
         </div>
       </div>
     </form>
