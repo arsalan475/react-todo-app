@@ -1,14 +1,14 @@
 import { useEffect, useState,useRef } from "react"
 import { deleteDoc,updateDoc } from "firebase/firestore";
 import { collection, addDoc ,where,doc,query,Timestamp,orderBy} from "firebase/firestore"; 
-import { onAuthStateChanged ,signOut} from "firebase/auth";
+import { onAuthStateChanged} from "firebase/auth";
 import { auth,db } from "../fireBaseConfig";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import LoadingBtn from "../component/LoadingBtn";
 import CircularIndeterminat from "../component/Loader"
-
+import MiniLoader from '../component/MiniLoader'
 import {getDocs } from "firebase/firestore"; 
 
 
@@ -23,7 +23,8 @@ function TodoApp({location,setLocation}) {
   const [todo,setTodo] = useState([])
   const [docid, setDocId] = useState([])
   const [loading, isLoading] = useState(false);
-  const [loadingAllTodos,setLoadingForAllTodos]  = useState(false)
+  const [loadingAllTodos, setLoadingForAllTodos] = useState(false)
+  const [miniLoad,setMiniLoad] = useState(false)
   
   useEffect(function(){
     setLocation(window.location.pathname)
@@ -104,7 +105,7 @@ isLoading(false)
   }
   
    async function deleteTodo(e) {
-     
+     setMiniLoad(true)
      let todoref = e.target.closest('.li')
      let defaulValue = todoref.firstElementChild.querySelectorAll('span')[0]
      let  todorefParent = e.target.closest('.empty')
@@ -113,17 +114,20 @@ isLoading(false)
      
      const userRef = doc(db, 'todos', todoref.id)
      
-     console.log(todoref.id)
-     console.log(e.target)
+     try {
        await deleteDoc(userRef).then((res) => {
          console.log('sucessfully Deleted')
 
-          todo.splice(index,1)
+         todo.splice(index, 1)
          todoref.remove()
          todorefParent.className = ''
+         setMiniLoad(false)
         
        });
-      
+     } catch (e) {
+       alert(e)
+       setMiniLoad(false)
+     }
 
 
      
@@ -193,19 +197,29 @@ try {
      
     
      
-    //  const updatedValue = prompt('Update todo')   || inputField.value
+     //  const updatedValue = prompt('Update todo')   || inputField.value
+     
+
      if (editableRef === false) {
+      setMiniLoad(true);
+       try{
        await updateDoc(doc(db, "todos", todoref.id), {
          title: inputField.value || defaulValue.textContent
        }).then((updated) => {
-        inputField.setAttribute("disabled", true);
+         inputField.setAttribute("disabled", true);
          
-        inputField.style.display= 'none'
+         inputField.style.display = 'none'
          defaulValue.style.display = 'block'
-         extraInfo.style.display='none'
-          forUpdatingTodos(auth.currentUser.uid)
+         extraInfo.style.display = 'none'
+         setMiniLoad(false);
+         forUpdatingTodos(auth.currentUser.uid)
          
-       });
+         
+       })
+      } catch(error){
+         setMiniLoad(false)
+         alert(error.message)
+       };
      }
      editableRef = !editableRef
      
@@ -231,7 +245,7 @@ try {
 
             {loading ? <LoadingBtn/>:
     <button  type="submit" 
-    className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition"
+    className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
   >
     Add Todo
   </button> 
@@ -275,7 +289,7 @@ try {
           
 
 
-
+{miniLoad ? <MiniLoader/>:"" }
          
         </div>
         
