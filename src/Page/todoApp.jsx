@@ -105,22 +105,27 @@ isLoading(false)
   }
   
    async function deleteTodo(e) {
-     setMiniLoad(true)
+    
      let todoref = e.target.closest('.li')
      let defaulValue = todoref.firstElementChild.querySelectorAll('span')[0]
      let  todorefParent = e.target.closest('.empty')
-     let parent = e.target.closest('.li').closest(".space-y-4")
+    //  let parent = e.target.closest('.li').closest(".space-y-4")
      let index = todo.indexOf(defaulValue.textContent)
-     
+     setMiniLoad(true)
+     console.log(todoref.id)
+     try { 
      const userRef = doc(db, 'todos', todoref.id)
      
-     try {
+     
        await deleteDoc(userRef).then((res) => {
-         console.log('sucessfully Deleted')
+       
 
          todo.splice(index, 1)
-         todoref.remove()
+        docid.splice(index,1)
+
          todorefParent.className = ''
+         console.log(todoref.id)
+         todoref.remove()
          setMiniLoad(false)
         
        });
@@ -260,7 +265,7 @@ try {
             {loadingAllTodos ? <CircularIndeterminat/> :  todo.length ? todo.map((el, i) => (
             
               
-            <div  id={docid[i]} 
+            <div 
             key={crypto.randomUUID()}
               
               className={`empty bg-gradient-to-r from-slate-100 to-blue-200 p-3 rounded-md shadow-md hover:shadow-lg transition transform hover:scale-105`}
