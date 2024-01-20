@@ -2,13 +2,19 @@ import { signOut} from "firebase/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { auth, db } from "../fireBaseConfig";
 import { Button } from "@mui/material";
+import { useContext } from "react";
+import UserContext from "../Context/Context";
 function SpecialLogOutBtn() {
+
+
+  const {isUser,setIsUser} = useContext(UserContext)
     const navigate = useNavigate()
     function logout() {
     
         signOut(auth).then(() => {
           console.log('logout successfully');
           navigate('/login')
+          setIsUser(false)
         }).catch((error) => {
           alert('Logout failed', ' ', error)
         });

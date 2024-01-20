@@ -1,8 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import { useContext } from 'react';
+import UserContext from '../Context/Context';
+
 
 const Home = () => {
+
+
+
+  const {isUser} = useContext(UserContext)
+
     return (
       <div className="relative min-h-screen">
     
@@ -17,12 +25,19 @@ const Home = () => {
             Organize your tasks, stay productive, and make your day more efficient with our Todo App.
           </p>
           <div className="flex justify-center">
-          <Link to="/DemoApp">   <button
+            {isUser ? <Link to="/todoApp">   <button
               className="bg-blue-700 font-semibold text-white px-6 py-3 rounded-md hover:bg-blue-600 transition"
             >
-             Try Demo Version
-                    </button>
-                    </Link>
+           Got to App
+            </button>
+            </Link>:<Link to="/DemoApp">   <button
+              className="bg-blue-700 font-semibold text-white px-6 py-3 rounded-md hover:bg-blue-600 transition"
+            >
+           Demo Version
+            </button>
+            </Link>
+            
+            }
           </div>
         </div>
       </div>

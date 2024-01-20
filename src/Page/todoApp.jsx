@@ -1,4 +1,4 @@
-import { useEffect, useState,useRef } from "react"
+import { useEffect, useState,useRef, useContext } from "react"
 import { deleteDoc,updateDoc } from "firebase/firestore";
 import { collection, addDoc ,where,doc,query,Timestamp,orderBy} from "firebase/firestore"; 
 import { onAuthStateChanged} from "firebase/auth";
@@ -10,6 +10,7 @@ import LoadingBtn from "../component/LoadingBtn";
 import CircularIndeterminat from "../component/Loader"
 import MiniLoader from '../component/MiniLoader'
 import {getDocs } from "firebase/firestore"; 
+import UserContext from "../Context/Context";
 
 
 function TodoApp({location,setLocation}) {
@@ -25,7 +26,8 @@ function TodoApp({location,setLocation}) {
   const [loading, isLoading] = useState(false);
   const [loadingAllTodos, setLoadingForAllTodos] = useState(false)
   const [miniLoad,setMiniLoad] = useState(false)
-  
+  const { isUser, setIsUser } = useContext(UserContext)
+  const [operation,setOperation] = useState('')
   useEffect(function(){
     setLocation(window.location.pathname)
    
@@ -33,6 +35,9 @@ function TodoApp({location,setLocation}) {
       if (user) {
        
         const uid = user.uid;
+
+        setIsUser(true)
+        navigate('/todoApp')
         setLoadingForAllTodos(true)
         getTodos(user)
         
@@ -111,6 +116,7 @@ isLoading(false)
      let  todorefParent = e.target.closest('.empty')
     //  let parent = e.target.closest('.li').closest(".space-y-4")
      let index = todo.indexOf(defaulValue.textContent)
+     setOperation('deleting')
      setMiniLoad(true)
      console.log(todoref.id)
      try { 
@@ -206,6 +212,7 @@ try {
      
 
      if (editableRef === false) {
+       setOperation('updating')
       setMiniLoad(true);
        try{
        await updateDoc(doc(db, "todos", todoref.id), {
@@ -294,7 +301,7 @@ try {
           
 
 
-{miniLoad ? <MiniLoader/>:"" }
+          {miniLoad ? <MiniLoader operation={operation} message={operation === 'deleting'? 'Deleting':'Updating'} />:"" }
          
         </div>
         
